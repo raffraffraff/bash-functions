@@ -1,0 +1,3 @@
+function horizontal-line() {
+ printf -v _hr "%*s" $(tput cols) && echo ${_hr// /${1--}}
+}

@@ -1,0 +1,15 @@
+de-duplicate() {
+  until [ -z "${1}" ]; do
+    case $1 in
+      --last)  LAST=true;;
+      *)       FILE=$1;;
+    esac
+    shift
+  done
+
+  if [ "${LAST}" == "true" ]; then
+    tac ${FILE} | awk '!x[$0]++' | tac
+  else
+    awk '!x[$0]++' ${FILE}
+  fi
+}
