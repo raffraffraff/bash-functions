@@ -1,0 +1,14 @@
+#!/bin/bash
+
+file-age() {
+
+  source date-diff
+
+  if [ -f "$1" ]; then
+    EPOCH=$(stat -c '%Y' $1)
+    date-diff now ${EPOCH}
+  else
+    echo "File $1 does not exist" >&2
+    return 1
+  fi
+}
