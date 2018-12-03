@@ -1,3 +1,5 @@
+#!/bin/bash
+
 is-int () 
 { 
     TEST=$(awk -v VAL="$1" 'BEGIN {print int(VAL)}');

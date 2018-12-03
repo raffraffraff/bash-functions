@@ -1,3 +1,5 @@
+#!/bin/bash
+
 horizontal_line() {
   printf "%`tput cols`s"|sed "s/ /_/g"
 }
