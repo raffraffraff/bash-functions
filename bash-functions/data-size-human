@@ -1,0 +1,29 @@
+data-size-human() {
+
+  source is-num
+  source data-size-bytes
+
+  is-num $1 
+  if [ $? -eq 0 ]; then
+    SIZE=$1
+  else
+    SIZE=$(data-size-bytes $1) 
+  fi
+
+  awk -v size="$SIZE" '
+      BEGIN {
+        human[1024^5]="PB"
+        human[1024^4]="TB"
+        human[1024^3]="GB"
+        human[1024^2]="MB"
+        human[1024]="KB"
+        for (x=1024^5; x>=1024; x/=1024) {
+          if (size>=x) {
+            printf "%.2f%s\n",size/x,human[x]
+            break
+          }
+        }
+        if (size<1024) print size"B"
+      }
+    '
+}
