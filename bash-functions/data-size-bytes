@@ -1,0 +1,24 @@
+data-size-bytes() {
+
+  local AWK_EXPR='
+    BEGIN {
+      IGNORECASE = 1
+    }
+    function printpower(n,b,p) {
+      printf "%u\n", n*b^p
+      next
+    }
+    /[0-9](B)?$/{print int($1);next}
+    /K(iB|B)?$/{printpower($1,  2, 10)}
+    /M(iB|B)?$/{printpower($1,  2, 20)}
+    /G(iB|B)?$/{printpower($1,  2, 30)}
+    /T(iB|B)?$/{printpower($1,  2, 40)}
+    /P(iB|B)?$/{printpower($1,  2, 50)}
+  '
+
+  if [[  -z "$1" ]]; then
+    awk "${AWK_EXPR}"
+  else
+    echo $1 | awk "${AWK_EXPR}"
+  fi
+}

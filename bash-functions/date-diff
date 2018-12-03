@@ -1,7 +1,11 @@
 #!/bin/bash
 
+source is-int
+
 date-diff() {
   declare -a ARGS=()
+
+  # Parse args
   until [ -z "$1" ]; do
     case $1 in
        -s|--seconds)  SEC=1;;
@@ -13,6 +17,7 @@ date-diff() {
     shift
   done
 
+  # Sanity check the input
   if [ "${#ARGS[@]}" -eq 1 ]; then
     DATE2=${ARGS[0]}
     DATE1=now
@@ -24,9 +29,18 @@ date-diff() {
     return 1
   fi
 
+  # Handle epoch dates
+  is-int "${DATE1}" && DATE1="@${DATE1}"
+  is-int "${DATE2}" && DATE2="@${DATE2}"
+
+  # Convert to epoch for calculatiopn
+  EPOCH1=$(date --utc +%s -d "${DATE1}") || return 1
+  EPOCH2=$(date --utc +%s -d "${DATE2}") || return 1
+
+  # Diff dates and return in correct denomination
   awk \
-    -v EPOCH1=$(date --utc +%s -d "${DATE1}") \
-    -v EPOCH2=$(date --utc +%s -d "${DATE2}") \
+    -v EPOCH1=$EPOCH1 \
+    -v EPOCH2=$EPOCH2 \
     -v SEC=${SEC:-1} \
     'BEGIN {print (EPOCH1-EPOCH2)/SEC}'
 }
