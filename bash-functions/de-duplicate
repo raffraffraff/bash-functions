@@ -1,8 +1,17 @@
+#!/bin/bash
+
+# de-duplicate: deduplicates lines of text in a file without sorting, by default
+#               showing the first instance of a match, unless --last arg is given
+
 de-duplicate() {
+
+  local FILE
+  local LAST
+
   until [ -z "${1}" ]; do
     case $1 in
-      --last)  LAST=true;;
-      *)       FILE=$1;;
+      --last)            LAST=true;;
+      *)                 FILE=$1;;
     esac
     shift
   done
