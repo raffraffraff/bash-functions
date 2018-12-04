@@ -1,5 +1,3 @@
-#!/bin/bash
-
 data-size-human() {
 
   source is-num

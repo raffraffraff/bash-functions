@@ -1,5 +1,3 @@
-#!/bin/bash
-
 is-num () 
 { 
     TEST=$(awk -v VAL="$1" 'BEGIN {print VAL*1}');

@@ -1,5 +1,3 @@
-#!/bin/bash
-
 data-size-bytes() {
 
   local AWK_EXPR='

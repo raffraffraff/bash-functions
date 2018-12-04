@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # de-duplicate: deduplicates lines of text in a file without sorting, by default
 #               showing the first instance of a match, unless --last arg is given
 
