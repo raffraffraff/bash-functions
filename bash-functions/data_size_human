@@ -1,14 +1,16 @@
-# data_size_human accepts a data size and converts it to human-readable. It can
-# accept without a unit of measurement (assumes it to be bytes) or with a unit
-# of measurement (eg GB). It converts the value into human-readable data size
-# using the most appropriate unit of measurement. Examples:
+# Purpose:
+# Converts a data value into human-readable format in the most appropriate unit.
+#
+# Arguments:
+# Accepts a value as an argument, or via stdin. 
 # 
+# Examples:
 # `data_size_human 21002302203` returns '19.56GB'
 # `data_size_bytes 100000G` returns '97.66TB'
 
 # Requires:
-#  - functions 'is_num', 'data_size_bytes'
-#  - gawk/nawk
+#  functions: 'is_num', 'data_size_bytes'
+#  gawk/nawk
 
 data_size_human() {
 

@@ -1,6 +1,9 @@
-# data_size_bytes accepts a human-readable data size (eg 21MiB) and converts it
-# into bytes. It can accept a date over stdin or as an argument.
-
+# Purpose:
+# Convert a human-readable data size and converts it into bytes
+#
+# Arguments:
+# Accept a value as and argument, of via stdin 
+#
 # Requires:
 #  - gawk/nawk
 

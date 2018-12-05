@@ -1,8 +1,9 @@
-# file_age calculates accepts a file as an argument and returns its age in
-# seconds.
+# Purpose: calculates the age (in seconds) of a file
+#
+# Arguments: A file
 #
 # Requirements:
-#  - function 'date_diff'
+#  function: 'date_diff'
 
 file_age() {
   local EPOCH
