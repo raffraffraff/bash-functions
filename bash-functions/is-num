@@ -1,9 +1,0 @@
-is-num () 
-{ 
-    TEST=$(awk -v VAL="$1" 'BEGIN {print VAL*1}');
-    if [[ "$1" == "$TEST" ]]; then
-        return 0
-    else
-        return 1
-    fi
-}

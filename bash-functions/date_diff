@@ -1,6 +1,16 @@
-source is-int
+# date_diff subtracts two dates, which are provided as arguments in any format
+# accepted by the 'date' command, and prints the time difference between them in
+# seconds (default), minutes, hours or days. If only one date is provided as an
+# argument, it is assumed that it is being subtracted from 'now'.
+#
+# Requires:
+#  - function 'is_int'
+#  - nawk/gawk
 
-date-diff() {
+source is_int
+
+date_diff() {
+  local DATE1 DATE2 EPOCH1 EPOCH2 ARGS
   declare -a ARGS=()
 
   # Parse args
@@ -23,13 +33,13 @@ date-diff() {
     DATE2=${ARGS[1]}
     DATE1=${ARGS[0]}
   else
-    echo "Usage: date-diff [-s] [-m] [-h] [-d] <date1> [date2]" >&2
+    echo "Usage: date_diff [-s] [-m] [-h] [-d] <date1> [date2]" >&2
     return 1
   fi
 
   # Handle epoch dates
-  is-int "${DATE1}" && DATE1="@${DATE1}"
-  is-int "${DATE2}" && DATE2="@${DATE2}"
+  is_int "${DATE1}" && DATE1="@${DATE1}"
+  is_int "${DATE2}" && DATE2="@${DATE2}"
 
   # Convert to epoch for calculatiopn
   EPOCH1=$(date --utc +%s -d "${DATE1}") || return 1

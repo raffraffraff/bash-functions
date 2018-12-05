@@ -1,5 +1,9 @@
-# de-duplicate: deduplicates lines of text in a file without sorting, by default
-#               showing the first instance of a match, unless --last arg is given
+# de_duplicate: removes lines of text in a file without sorting it. By default
+# it will show the first instance of each line. You can override this default by
+# passing the `--last` argument.
+#
+# Requirements:
+#  - gawk/nawk
 
 de-duplicate() {
 
@@ -14,7 +18,7 @@ de-duplicate() {
     shift
   done
 
-  if [ "${LAST}" == "true" ]; then
+  if [ "${LAST}" = "true" ]; then
     tac ${FILE} | awk '!x[$0]++' | tac
   else
     awk '!x[$0]++' ${FILE}

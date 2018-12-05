@@ -1,4 +1,10 @@
-data-size-bytes() {
+# data_size_bytes accepts a human-readable data size (eg 21MiB) and converts it
+# into bytes. It can accept a date over stdin or as an argument.
+
+# Requires:
+#  - gawk/nawk
+
+data_size_bytes() {
 
   local AWK_EXPR='
     BEGIN {
@@ -16,7 +22,7 @@ data-size-bytes() {
     /P(iB|B)?$/{printpower($1,  2, 50)}
   '
 
-  if [[  -z "$1" ]]; then
+  if [  -z "$1" ]; then
     awk "${AWK_EXPR}"
   else
     echo $1 | awk "${AWK_EXPR}"

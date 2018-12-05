@@ -1,0 +1,15 @@
+# is_num uses awk to figure out whether or not the argument passed to the
+# function is a number
+
+# Requires:
+#  - nawk/gawk
+
+is_num () 
+{ 
+    local TEST=$(awk -v VAL="$1" 'BEGIN {print VAL*1}');
+    if [ "$1" = "$TEST" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
