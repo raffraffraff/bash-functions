@@ -1,3 +1,6 @@
+# Purpose:
+# Prints a horizontal line (underscores) across the width of the terminal
+
 function horizontal_line() {
  printf -v _hr "%*s" $(tput cols) && echo ${_hr// /${1-_}}
 }

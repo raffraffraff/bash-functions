@@ -1,6 +1,8 @@
-# Purpose: calculates the age (in seconds) of a file
+# Purpose:
+# Calculates the age (in seconds) of a file
 #
-# Arguments: A file
+# Arguments:
+# Expects a file name to be passed as an argument
 #
 # Requirements:
 #  function: 'date_diff'

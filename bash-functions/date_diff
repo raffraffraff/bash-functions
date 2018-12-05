@@ -1,7 +1,14 @@
-# date_diff subtracts two dates, which are provided as arguments in any format
-# accepted by the 'date' command, and prints the time difference between them in
-# seconds (default), minutes, hours or days. If only one date is provided as an
-# argument, it is assumed that it is being subtracted from 'now'.
+# Purpose:
+# Print the time between two dats in seconds, minutes, hours or days
+
+# Arguments:
+# Dates are provided as arguments in any format supported by the 'date' command.
+#
+# Examples:
+# $> date_diff -d "next week" "now"
+# 7
+# $> date_diff -h "yesterday" "last week"
+# 144
 #
 # Requires:
 #  - function 'is_int'
