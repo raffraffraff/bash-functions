@@ -1,11 +1,19 @@
-# de_duplicate: removes lines of text in a file without sorting it. By default
-# it will show the first instance of each line. You can override this default by
-# passing the `--last` argument.
+# Purpose: 
+# Removes duplicate lines from a file without sorting it. By default, it shows
+# the first instance of each line. You can override this by passing the --last
+# argument.
+# 
+# Arguments:
+# Accepts a file name as an argument, or text via stdin
+#
+# Examples:
+# cat $file | de_duplicate --last
+# de_duplicate $file
 #
 # Requirements:
 #  - gawk/nawk
 
-de-duplicate() {
+de_duplicate() {
 
   local FILE
   local LAST

@@ -12,9 +12,9 @@
 
 data_size_human() {
 
+  local SIZE
   source is_num
   source data_size_bytes
-  local SIZE
 
   is_num $1 
   if [ $? -eq 0 ]; then

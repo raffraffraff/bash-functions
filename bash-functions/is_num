@@ -1,11 +1,10 @@
-# is_num uses awk to figure out whether or not the argument passed to the
-# function is a number
+# Purpose: 
+# Tests if a value is a number, and exits with stderr 0 if it is.
+#
+# Arguments: 
+# A value may be passed as an argument or via stdin
 
-# Requires:
-#  - nawk/gawk
-
-is_num () 
-{ 
+is_num () { 
     local TEST=$(awk -v VAL="$1" 'BEGIN {print VAL*1}');
     if [ "$1" = "$TEST" ]; then
         return 0

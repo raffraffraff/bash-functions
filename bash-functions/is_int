@@ -1,5 +1,10 @@
-is_int () 
-{ 
+# Purpose: 
+# Tests if a value is an integer, and exits with stderr 0 if it is
+# 
+# Arguments:
+# A value may be passed as an argument, or via stdin
+
+is_int () { 
     local TEST=$(awk -v VAL="$1" 'BEGIN {print int(VAL)}');
     if [ "$1" = "$TEST" ]; then
         return 0
