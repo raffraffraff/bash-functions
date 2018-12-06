@@ -5,10 +5,8 @@ doing much more complicated things than you should _ever_ use it for.
 
 The Unix philosophy of "write programs that do one thing very well" coupled with
 the brilliant idea of pipes spawned utilities for shell programming, file
-manipulation and text processing. Given that 'everything is Unix a file', this 
-allowed shell scripts to do almost anything, in a systems administration sense.
-This also means that in modern sripts, those 'programs that do one thing well'
-include curl, jq, awk etc. 
+manipulation and text processing. Nowadays we can add more command line programs
+like curl, jq, awk and more.
 
 # When BASH?
 There's no straight answer but I think these are good enough:
