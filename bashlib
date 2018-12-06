@@ -1,21 +1,44 @@
 #!/bin/bash
 
-# Terminal Formatting Strings
-export RED=`tput setaf 1`
-export GREEN=`tput setaf 2`
-export YELLOW=`tput setaf 3`
-export CYAN=`tput setaf 6`
-export WHITE=`tput setaf 7`
-export BOLD=`tput smul;tput bold`
-export EM=`tput smul;tput bold`
-export RESET=`tput sgr0`
+# Terminal Background Color Strings
+export BG_DEFAULT='\e[49m'
+export BG_BLACK='\e[40m'
+export BG_RED='\e[41m'
+export BG_GREEN='\e[42m'
+export BG_YELLOW='\e[43m'
+export BG_BLUE='\e[44m'
+export BG_MAGENTA='\e[45m'
+export BG_CYAN='\e[46m'
+export BG_GRAY='\e[100m'
+export BG_WHITE='\e[107m'
+
+# Terminal Foreground Color Strings
+export DEFAULT='\e[39m'
+export BLACK='\e[30m'
+export RED='\e[31m'
+export GREEN='\e[32m'
+export YELLOW='\e[33m'
+export BLUE='\e[34m'
+export MAGENTA='\e[35m'
+export CYAN='\e[36m'
+export GRAY='\e[90m'
+export WHITE='\e[97m'
+
+# Terminal Text Formatting Strings
+export BOLD='\e[1m'
+export DIM='\e[2m'
+export UNDERLINED='\e[4m'
+export INVERTED='\e[7m'
+export BLINK='\e[5m'
+export RESET='\e[0m'
+
 
 # FUNCTIONS
 
-# Purpose:
-#   Convert a human-readable data size and converts it into bytes
-# Arguments:
-#   Accept a value as and argument, of via stdin 
+################################################################################
+# Convert a human-readable data size and converts it into bytes
+# Arguments: $1 or stdin, human-readable data size
+################################################################################
 data_size_bytes() {
   local AWK_EXPR='
     BEGIN {
@@ -40,13 +63,10 @@ data_size_bytes() {
   fi
 }
 
-# Purpose:
-#   Converts a data value into human-readable format in the most appropriate unit.
-# Arguments:
-#   Accepts a value as an argument, or via stdin. 
-# Examples:
-#   data_size_human 21002302203
-#   data_size_bytes 100000G
+################################################################################
+# Converts a data size into human-readable format in the most appropriate unit.
+# Arguments: $1 or stdin, data size 
+################################################################################
 data_size_human() {
   local SIZE
 
@@ -75,12 +95,11 @@ data_size_human() {
     '
 }
 
-# Purpose:
-#   Print the time between two dats in seconds, minutes, hours or days
-# Arguments:
-#   Dates are provided as arguments in any format supported by the 'date' command.
-# Example:
-#   date_diff -d "next week" "now"
+################################################################################
+# Prints the time between two dates in seconds, minutes, hours or days. If only
+# one date is provided, the time between that date and 'now' is printed.
+# Arguments: $1 = date string, $2 = date string
+################################################################################
 date_diff() {
   local DATE1 DATE2 EPOCH1 EPOCH2 ARGS
   declare -a ARGS=()
@@ -125,15 +144,12 @@ date_diff() {
     'BEGIN {print (EPOCH1-EPOCH2)/SEC}'
 }
 
-# Purpose: 
-#   Remove duplicate lines from a file without sorting it. By default, it shows
-#   the first instance of each line. You can override this by passing the --last
-#   argument.
-# Arguments:
-#   Accepts a file name as an argument, or text via stdin
-# Examples:
-#   cat $file | de_duplicate --last
-#   de_duplicate $file
+################################################################################
+# Removes duplicate lines from a file without sorting it. By default, it shows
+# the first instance of each line. You can override this by passing the --last
+# argument.
+# Arguments: $1 or stdin = File path
+################################################################################
 de_duplicate() {
   local FILE
   local LAST
@@ -153,18 +169,27 @@ de_duplicate() {
   fi
 }
 
-# Purpose:
-#   Send error messages to stderr in a standard format
-# Arguments:
-#   String - message to be sent to stderr
-error() {
-  echo "$(date +'%Y-%m-%d %H:%M:%S %z') ERROR - $@" >&2
+################################################################################
+# Exit script with a message and exit code
+# Arguments: $1 = Message, $2 = Exit code
+################################################################################
+die() {
+  log error "$1"
+  exit $2
 }
 
-# Purpose:
-#   Calculates the age (in seconds) of a file
-# Arguments:
-#   Expects a file name to be passed as an argument
+################################################################################
+# Sends error messages to stderr in a standard format
+# Arguments: $1 = Error string
+################################################################################
+error() {
+  printf "$(date +'%Y-%m-%d %H:%M:%S %z') ${RED}ERROR - $@${DEFAULT}\n" >&2
+}
+
+################################################################################
+# Calculates the age (in seconds) of a file
+# Arguments: $1 = File path
+################################################################################
 file_age() {
   local EPOCH
 
@@ -177,31 +202,39 @@ file_age() {
   fi
 }
 
-# Purpose:
-#   Calculates the size (in bytes) of a file
-# Arguments:
-#   Expects a file name to be passed as an argument
+################################################################################
+# Calculates the size (in bytes) of a file
+# Arguments: $1 = File path
+################################################################################
 file_size() {
-  local EPOCH
-
   if [ -f "$1" ]; then
-    EPOCH=$(stat -c '%B' $1)
+    stat -c '%s' $1
   else
-    echo "File $1 does not exist" >&2
+    error "File $1 does not exist"
     return 1
   fi
 }
 
-# Purpose:
-#   Prints a horizontal line (underscores) across the width of the terminal
+################################################################################
+# Prints a horizontal line (underscores) across the width of the terminal
+################################################################################
 horizontal_line() {
  printf -v _hr "%*s" $(tput cols) && echo ${_hr// /${1-_}}
 }
 
-# Purpose: 
-#   Tests if a value is an integer, and exits with stderr 0 if it is
-# Arguments:
-#   A value may be passed as an argument, or via stdin
+
+################################################################################
+# Prints INFO messages to stdout in a standard format
+# Arguments: $1 = Info string
+################################################################################
+info() {
+  printf "$(date +'%Y-%m-%d %H:%M:%S %z') INFO - $@\n"
+}
+
+################################################################################
+# Purpose: Tests if a value is an integer, returns 0 if true or 1 if false
+# Arguments: $1 or stdin = String to be tested
+################################################################################
 is_int () { 
   local TEST=$(awk -v VAL="$1" 'BEGIN {print int(VAL)}');
 
@@ -212,11 +245,11 @@ is_int () {
   fi
 }
 
-# Purpose: 
-#   Tests if a value is a number, and exits with stderr 0 if it is.
-# Arguments: 
-#   A value may be passed as an argument or via stdin
-is_num () {
+################################################################################
+# Purpose: Test if a string is a number
+# Arguments: $1 or stdin = String to be tested
+################################################################################
+is_num() {
   local TEST=$(awk -v VAL="$1" 'BEGIN {print VAL*1}');
 
   if [ "$1" = "$TEST" ]; then
@@ -226,21 +259,22 @@ is_num () {
   fi
 }
 
-# Purpose:
-#   Send error messages to stderr in a standard format
-# Arguments:
-#   String - message to be sent to stderr
-message() {
-  echo "$(date +'%Y-%m-%d %H:%M:%S %z') $@"
+################################################################################
+# Log info, warn and error messages in a standard format
+# Arguments: $1 = Error level, $2 = String to log
+# Requirements: ${LOG_FILE} variable
+################################################################################
+log() {
+  case $1 in
+    info|warning|error)  $1 "$2" 2>&1 | tee -a ${LOG_FILE};;
+    *)                   return 1;;
+  esac
 }
 
-# Purpose: 
-#   Removes special characters from text
-# Arguments: 
-#   Text may be passed as an argument (eg: a variable) or passed via stdin
-# Examples:
-#   remove_special_chars ${COLOR_TEXT}
-#   command | remove_special_chars
+################################################################################
+# Text formatting - Removes special characters from text
+# Arguments: $1 or stdin = String to be processed
+################################################################################
 remove_special_chars() {
   if [ $# -gt 0 ]; then
     sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" <<<"${@}"
@@ -249,10 +283,10 @@ remove_special_chars() {
   fi
 }
 
-# Purpose:
-#   Converts characters in a string from upper-case to lower-case
-# Arguments:
-#   Strings may be passed as arguments or via stdin
+################################################################################
+# Text formatting - Convert characters from upper-case to lower-case
+# Arguments: $1 or stdin = String to be processed
+################################################################################
 to_lower() {
   if [ $# -gt 0 ]; then
     tr '[A-Z]' '[a-z]' <<<"${@}"
@@ -261,10 +295,10 @@ to_lower() {
   fi
 }
 
-# Purpose:
-#   Convert characters in a string from lower-case to upper-case
-# Arguments: 
-#   Strings may be passed as arguments or via stdin
+################################################################################
+# Text formatting - Convert characters from lower-case to upper-case
+# Arguments: $1 or stdin = String to be processed
+################################################################################
 to_upper() {
   if [ $# -gt 0 ]; then
     tr '[a-z]' '[A-Z]' <<<"${@}"
@@ -273,6 +307,10 @@ to_upper() {
   fi
 }
 
+################################################################################
+# Send warning messages to stdout in a standard format
+# Arguments: $1 = Warning string
+################################################################################
 warning() {
-  echo "$(date +'%Y-%m-%d %H:%M:%S %z') WARNING - $@"
+  printf "$(date +'%Y-%m-%d %H:%M:%S %z') ${YELLOW}WARNING - $@${DEFAULT}\n"
 }
