@@ -1,25 +1,22 @@
 # Why BASH?
-TL;DR It's not sexy, but BASH provides a fast and easy way to do smaller tasks, and in
-fact, you can probably do a lot more complicated stuff in BASH than you _should_.
+TL;DR It's not sexy, but BASH is available on practically all Linux servers and
+is sometimes that fastest way to automate small tasks. It's actually capable of
+doing much more complicated things than you should _ever_ use it for.
 
-The Unix philosophy of "write programs that do one thing very well" coupled with the 
-brillian idea of pipes spawned utilities for shell programming, file manipulation and
-text processing. Given that 'everything is Unix a file', this allowed shell scripts to
-do almost anything, in a systems administration sense. This also means that in modern
-sripts, those 'programs that do one thing very well' include curl, jq, awk etc. 
-
-I will test all these functions in other shells (mainly zsh, but also dash, ash etc)
-and update each one with compatibility info.
+The Unix philosophy of "write programs that do one thing very well" coupled with
+the brilliant idea of pipes spawned utilities for shell programming, file
+manipulation and text processing. Given that 'everything is Unix a file', this 
+allowed shell scripts to do almost anything, in a systems administration sense.
+This also means that in modern sripts, those 'programs that do one thing well'
+include curl, jq, awk etc. 
 
 # When BASH?
 There's no straight answer but I think these are good enough:
-* If you don't need to distinguish between types
-* If you don't need to work data structures
-* If the script is <500 lines long (or even shorter, but y'know, scripts grow)
+* If you don't need to distinguish between types or work with data structures
+* If the script is likely to remain simple and under a few hundred lines
 
-# So what's in 'bash-functions'?
-The goal of this repo right now is to act as a drop-box for the functions that I
-write to make automation easier.
+# What's in bashlib?
+It is a collection of functions that save time while writing scripts.
 
 # Dependencies
 These utilities assume that you have, or can install, the GNU coreutils, sed, awk,

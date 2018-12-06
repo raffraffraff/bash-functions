@@ -1,0 +1,278 @@
+#!/bin/bash
+
+# Terminal Formatting Strings
+export RED=`tput setaf 1`
+export GREEN=`tput setaf 2`
+export YELLOW=`tput setaf 3`
+export CYAN=`tput setaf 6`
+export WHITE=`tput setaf 7`
+export BOLD=`tput smul;tput bold`
+export EM=`tput smul;tput bold`
+export RESET=`tput sgr0`
+
+# FUNCTIONS
+
+# Purpose:
+#   Convert a human-readable data size and converts it into bytes
+# Arguments:
+#   Accept a value as and argument, of via stdin 
+data_size_bytes() {
+  local AWK_EXPR='
+    BEGIN {
+      IGNORECASE = 1
+    }
+    function printpower(n,b,p) {
+      printf "%u\n", n*b^p
+      next
+    }
+    /[0-9](B)?$/{print int($1);next}
+    /K(iB|B)?$/{printpower($1,  2, 10)}
+    /M(iB|B)?$/{printpower($1,  2, 20)}
+    /G(iB|B)?$/{printpower($1,  2, 30)}
+    /T(iB|B)?$/{printpower($1,  2, 40)}
+    /P(iB|B)?$/{printpower($1,  2, 50)}
+  '
+
+  if [  -z "$1" ]; then
+    awk "${AWK_EXPR}"
+  else
+    echo $1 | awk "${AWK_EXPR}"
+  fi
+}
+
+# Purpose:
+#   Converts a data value into human-readable format in the most appropriate unit.
+# Arguments:
+#   Accepts a value as an argument, or via stdin. 
+# Examples:
+#   data_size_human 21002302203
+#   data_size_bytes 100000G
+data_size_human() {
+  local SIZE
+
+  is_num $1 
+  if [ $? -eq 0 ]; then
+    SIZE=$1
+  else
+    SIZE=$(data_size_bytes $1) 
+  fi
+
+  awk -v size="$SIZE" '
+      BEGIN {
+        human[1024^5]="PB"
+        human[1024^4]="TB"
+        human[1024^3]="GB"
+        human[1024^2]="MB"
+        human[1024]="KB"
+        for (x=1024^5; x>=1024; x/=1024) {
+          if (size>=x) {
+            printf "%.2f%s\n",size/x,human[x]
+            break
+          }
+        }
+        if (size<1024) print size"B"
+      }
+    '
+}
+
+# Purpose:
+#   Print the time between two dats in seconds, minutes, hours or days
+# Arguments:
+#   Dates are provided as arguments in any format supported by the 'date' command.
+# Example:
+#   date_diff -d "next week" "now"
+date_diff() {
+  local DATE1 DATE2 EPOCH1 EPOCH2 ARGS
+  declare -a ARGS=()
+
+  # Parse args
+  until [ -z "$1" ]; do
+    case $1 in
+       -s|--seconds)  SEC=1;;
+       -m|--minutes)  SEC=60;;
+       -h|--hours)    SEC=3600;;
+       -d|--days)     SEC=86400;;
+       *)             ARGS+=("$1");;
+    esac
+    shift
+  done
+
+  # Sanity check the input
+  if [ "${#ARGS[@]}" -eq 1 ]; then
+    DATE2=${ARGS[0]}
+    DATE1=now
+  elif [ "${#ARGS[@]}" -eq 2 ]; then
+    DATE2=${ARGS[1]}
+    DATE1=${ARGS[0]}
+  else
+    echo "Usage: date_diff [-s] [-m] [-h] [-d] <date1> [date2]" >&2
+    return 1
+  fi
+
+  # Handle epoch dates
+  is_int "${DATE1}" && DATE1="@${DATE1}"
+  is_int "${DATE2}" && DATE2="@${DATE2}"
+
+  # Convert to epoch for calculatiopn
+  EPOCH1=$(date --utc +%s -d "${DATE1}") || return 1
+  EPOCH2=$(date --utc +%s -d "${DATE2}") || return 1
+
+  # Diff dates and return in correct denomination
+  awk \
+    -v EPOCH1=$EPOCH1 \
+    -v EPOCH2=$EPOCH2 \
+    -v SEC=${SEC:-1} \
+    'BEGIN {print (EPOCH1-EPOCH2)/SEC}'
+}
+
+# Purpose: 
+#   Remove duplicate lines from a file without sorting it. By default, it shows
+#   the first instance of each line. You can override this by passing the --last
+#   argument.
+# Arguments:
+#   Accepts a file name as an argument, or text via stdin
+# Examples:
+#   cat $file | de_duplicate --last
+#   de_duplicate $file
+de_duplicate() {
+  local FILE
+  local LAST
+
+  until [ -z "${1}" ]; do
+    case $1 in
+      --last)            LAST=true;;
+      *)                 FILE=$1;;
+    esac
+    shift
+  done
+
+  if [ "${LAST}" = "true" ]; then
+    tac ${FILE} | awk '!x[$0]++' | tac
+  else
+    awk '!x[$0]++' ${FILE}
+  fi
+}
+
+# Purpose:
+#   Send error messages to stderr in a standard format
+# Arguments:
+#   String - message to be sent to stderr
+error() {
+  echo "$(date +'%Y-%m-%d %H:%M:%S %z') ERROR - $@" >&2
+}
+
+# Purpose:
+#   Calculates the age (in seconds) of a file
+# Arguments:
+#   Expects a file name to be passed as an argument
+file_age() {
+  local EPOCH
+
+  if [ -f "$1" ]; then
+    EPOCH=$(stat -c '%Y' $1)
+    date_diff now ${EPOCH}
+  else
+    echo "File $1 does not exist" >&2
+    return 1
+  fi
+}
+
+# Purpose:
+#   Calculates the size (in bytes) of a file
+# Arguments:
+#   Expects a file name to be passed as an argument
+file_size() {
+  local EPOCH
+
+  if [ -f "$1" ]; then
+    EPOCH=$(stat -c '%B' $1)
+  else
+    echo "File $1 does not exist" >&2
+    return 1
+  fi
+}
+
+# Purpose:
+#   Prints a horizontal line (underscores) across the width of the terminal
+horizontal_line() {
+ printf -v _hr "%*s" $(tput cols) && echo ${_hr// /${1-_}}
+}
+
+# Purpose: 
+#   Tests if a value is an integer, and exits with stderr 0 if it is
+# Arguments:
+#   A value may be passed as an argument, or via stdin
+is_int () { 
+  local TEST=$(awk -v VAL="$1" 'BEGIN {print int(VAL)}');
+
+  if [ "$1" = "$TEST" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Purpose: 
+#   Tests if a value is a number, and exits with stderr 0 if it is.
+# Arguments: 
+#   A value may be passed as an argument or via stdin
+is_num () {
+  local TEST=$(awk -v VAL="$1" 'BEGIN {print VAL*1}');
+
+  if [ "$1" = "$TEST" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Purpose:
+#   Send error messages to stderr in a standard format
+# Arguments:
+#   String - message to be sent to stderr
+message() {
+  echo "$(date +'%Y-%m-%d %H:%M:%S %z') $@"
+}
+
+# Purpose: 
+#   Removes special characters from text
+# Arguments: 
+#   Text may be passed as an argument (eg: a variable) or passed via stdin
+# Examples:
+#   remove_special_chars ${COLOR_TEXT}
+#   command | remove_special_chars
+remove_special_chars() {
+  if [ $# -gt 0 ]; then
+    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" <<<"${@}"
+  else
+    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+  fi
+}
+
+# Purpose:
+#   Converts characters in a string from upper-case to lower-case
+# Arguments:
+#   Strings may be passed as arguments or via stdin
+to_lower() {
+  if [ $# -gt 0 ]; then
+    tr '[A-Z]' '[a-z]' <<<"${@}"
+  else
+    tr '[A-Z]' '[a-z]'
+  fi
+}
+
+# Purpose:
+#   Convert characters in a string from lower-case to upper-case
+# Arguments: 
+#   Strings may be passed as arguments or via stdin
+to_upper() {
+  if [ $# -gt 0 ]; then
+    tr '[a-z]' '[A-Z]' <<<"${@}"
+  else
+    tr '[a-z]' '[A-Z]'
+  fi
+}
+
+warning() {
+  echo "$(date +'%Y-%m-%d %H:%M:%S %z') WARNING - $@"
+}
