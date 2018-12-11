@@ -118,11 +118,11 @@ date_diff() {
 
   # Sanity check the input
   if [ "${#ARGS[@]}" -eq 1 ]; then
-    DATE2=${ARGS[0]}
-    DATE1=now
+    DATE2="${ARGS[0]}"
+    DATE1="now"
   elif [ "${#ARGS[@]}" -eq 2 ]; then
-    DATE2=${ARGS[1]}
-    DATE1=${ARGS[0]}
+    DATE2="${ARGS[1]}"
+    DATE1="${ARGS[0]}"
   else
     echo "Usage: date_diff [-s] [-m] [-h] [-d] <date1> [date2]" >&2
     return 1
@@ -195,7 +195,7 @@ file_age() {
 
   if [ -f "$1" ]; then
     EPOCH=$(stat -c '%Y' $1)
-    date_diff now ${EPOCH}
+    date_diff "now" "${EPOCH}"
   else
     echo "File $1 does not exist" >&2
     return 1

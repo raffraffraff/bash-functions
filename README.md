@@ -37,8 +37,8 @@ msg "${CYAN}${BOLD}Demo${RESET}"
 horizontal_line
 
 SIZE_HUMAN=$(file_size ./bashlib | data_size_human)
-AGE_MINUTES=$(file_age -m ./bashlib)
-msg "The bashlib is ${SIZE_HUMAN} and was created ${AGE_MINUTES} minutes ago"
+AGE=$(file_age ./bashlib)
+msg "The bashlib is ${SIZE_HUMAN} and was created ${AGE} seconds ago"
 
 echo -ne "${BOLD}${CYAN}"
 horizontal_line
