@@ -227,7 +227,7 @@ horizontal_line() {
 # Prints INFO messages to stdout in a standard format
 # Arguments: $1 = Info string
 ################################################################################
-info() {
+msg() {
   printf "$(date +'%Y-%m-%d %H:%M:%S %z') INFO - $@\n"
 }
 
