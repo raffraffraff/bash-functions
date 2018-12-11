@@ -64,15 +64,19 @@ read -p "Enter a real number: " NUMBER
 read -p "Enter a date string (compatible with the date command): " DATE
 
 if is_int "${INTEGER}"; then
-  echo "${INTEGER} is an int - well done"
+  msg "${INTEGER} is an int - well done"
 else
-  echo "${INTEGER} is not an int - go back to school"
+  error "${INTEGER} is not an int - go back to school"
 fi
 
 if is_num "${NUMBER}"; then
-  echo "${NUMBER} is a number"
+  if is_int "${NUMBER}; then
+	  warn "${NUMBER} ${BOLD}is${RESET} a number, but is also an integer"
+	else
+    msg "${NUMBER} is a number"
+	fi
 else
-  echo "${NUMBER} is not a number"
+  error "${NUMBER} is not a number"
 fi
 
 if date -d "$DATE" >/dev/null ; then
