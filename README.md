@@ -19,8 +19,8 @@ There's no right answer, but I think these situations are relevant:
 A small collection of functions that have simplified a few scripts for me.
 * data_size_bytes - converts human-readable data to bytes (eg: 12GB > 12582912)
 * data_size_human - converts bytes to human-readable (eg: 12582912 > 12GB)
-* date_diff - outputs time between two dates in seconds, minutes, hours, days...
-* de_duplicate - de-duplicates lines in text without sorting
+* date_diff - outputs time between two dates in seconds, minutes, hours or days (eg: date_diff -s tomorrow yesterday)
+* de_duplicate - de-duplicates lines in text without sorting, showing first or last instance of a line
 * die - log an error message and exit the script with an error code
 * error - log an error message to a file and stderr
 * file_age - return the age of a file in seconds
