@@ -75,7 +75,7 @@ else
 fi
 
 if date -d "$DATE" >/dev/null ; then
-  echo "There are $(date_diff -m "now" "$DATE") seconds between now and $DATE"
+  echo "There are $(date_diff -m "now" "$DATE") minutes between now and $DATE"
 fi
 ```
 
