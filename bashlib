@@ -183,7 +183,7 @@ die() {
 # Arguments: $1 = Error string
 ################################################################################
 error() {
-  printf "$(date +'%Y-%m-%d %H:%M:%S %z') ${RED}ERROR - $@${DEFAULT}\n" >&2
+  printf "${RED}ERROR - $@${DEFAULT}\n" >&2
 }
 
 ################################################################################
@@ -228,7 +228,7 @@ horizontal_line() {
 # Arguments: $1 = Info string
 ################################################################################
 msg() {
-  printf "$(date +'%Y-%m-%d %H:%M:%S %z') INFO - $@\n"
+  printf "$@\n"
 }
 
 ################################################################################
@@ -266,8 +266,10 @@ is_num() {
 ################################################################################
 log() {
   case $1 in
-    info|warning|error)  $1 "$2" 2>&1 | tee -a ${LOG_FILE};;
-    *)                   return 1;;
+    info)    msg "$2"; printf "$(date +'%Y-%m-%d %H:%M:%S %z') INFO - $2\n" >> ${LOG_FILE};;
+    warn)    warn "$2"; printf "$(date +'%Y-%m-%d %H:%M:%S %z') WARN - $2\n" >> ${LOG_FILE};;
+    error)   error "$2" 2>&1; printf "$(date +'%Y-%m-%d %H:%M:%S %z') ERROR - $2\n" >> ${LOG_FILE};;
+    *)       return 1;;
   esac
 }
 
@@ -311,6 +313,6 @@ to_upper() {
 # Send warning messages to stdout in a standard format
 # Arguments: $1 = Warning string
 ################################################################################
-warning() {
-  printf "$(date +'%Y-%m-%d %H:%M:%S %z') ${YELLOW}WARNING - $@${DEFAULT}\n"
+warn() {
+  printf "${YELLOW}WARNING - $@${DEFAULT}\n"
 }
