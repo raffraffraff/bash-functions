@@ -16,14 +16,14 @@ The bashlib is a small collection of functions that have simplified a few script
 * de_duplicate - de-duplicates lines in text without sorting, showing first or last instance of a line
 * die - log an error message and exit the script with an error code (eg: die "I die" 2)
 * error - log an error message to a file and stderr (eg: error "Woops")
-* file_age - return the age of a file in seconds
-* file_size - returns the size of a file in bytes
+* file_age - return the age of a file (in seconds by default, but accepts -s, -m, -h, -d)
+* file_size - returns the size of a file (in bytes by default, but accepts -h|--human-readable)
 * horizontal_line - draws a horizontal line across the entire terminal
 * msg - print an informational message to stdout (eg: msg "Hello world")
 * is_int - tests if a value is an integer
 * is_num - tests if a value is a number
 * log - log a message to a file and stdout
-* remove_special_chars - removes special characters (eg color codes) from text
+* remove_special_chars - removes special characters (eg: color codes) from text
 * to_lower - converts all characters in text to lower case
 * to_upper - converts all characters in text to upper case
 * warning - log a warning message to a file and stdout
@@ -48,16 +48,13 @@ msg "De-duplicating a block of text, keeping the ${BOLD}last${RESET} copy of eac
 cat <<EOF | de_duplicate --last
 one
 two
-one
 three
 five
-three
 four
+three
+two
 one
 EOF
-
-
-horizontal_line
 
 read -p "Enter an integer: " INTEGER
 read -p "Enter a real number: " NUMBER
@@ -80,7 +77,7 @@ else
 fi
 
 if date -d "$DATE" >/dev/null ; then
-  echo "There are $(date_diff -s "now" "$DATE") seconds between now and $DATE"
+  echo "There are $(date_diff -m "now" "$DATE") seconds between now and $DATE"
 fi
 ```
 
