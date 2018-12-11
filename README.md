@@ -37,12 +37,10 @@ msg "${CYAN}${BOLD}Demo${RESET}"
 horizontal_line
 
 SIZE_HUMAN=$(file_size -h ./bashlib)
-AGE=$(file_age ./bashlib)
-msg "The bashlib is ${SIZE_HUMAN} and was created ${AGE} seconds ago"
+AGE_MINUTES=$(file_age -m ./bashlib)
+msg "The bashlib is ${SIZE_HUMAN} and was created ${AGE_MINUTES} minutes ago"
 
-echo -ne "${BOLD}${CYAN}"
-horizontal_line
-echo -ne "${RESET}"
+echo -ne "${BOLD}${CYAN}"; horizontal_line; echo -ne "${RESET}"
 
 msg "De-duplicating a block of text, keeping the ${BOLD}last${RESET} copy of each line..."
 cat <<EOF | de_duplicate --last
