@@ -65,7 +65,7 @@ else
 fi
 
 if is_num "${NUMBER}"; then
-  if is_int "${NUMBER}; then
+  if is_int "${NUMBER}"; then
 	  warn "${NUMBER} ${BOLD}is${RESET} a number, but is also an integer"
 	else
     msg "${NUMBER} is a number"
