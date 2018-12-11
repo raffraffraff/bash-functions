@@ -151,8 +151,7 @@ date_diff() {
 # Arguments: $1 or stdin = File path
 ################################################################################
 de_duplicate() {
-  local FILE
-  local LAST
+  local FILE LAST
 
   until [ -z "${1}" ]; do
     case $1 in
@@ -188,16 +187,24 @@ error() {
 
 ################################################################################
 # Calculates the age (in seconds) of a file
-# Arguments: $1 = File path
+# Arguments: File path, unit of time (optional - default to seconds)
 ################################################################################
 file_age() {
-  local EPOCH
+  local FILE ARG EPOCH
 
-  if [ -f "$1" ]; then
-    EPOCH=$(stat -c '%Y' $1)
-    date_diff "now" "${EPOCH}"
+  until [ -z "$1" ]; do
+    case $1 in
+      -s|-m|-h|-d)  ARG=$1;;
+      *)            FILE=$1;;
+    esac
+    shift
+  done
+
+  if [ -f "${FILE}" ]; then
+    EPOCH=$(stat -c '%Y' "${FILE}")
+    date_diff ${ARG} "now" "${EPOCH}"
   else
-    echo "File $1 does not exist" >&2
+    echo "File $FILE does not exist" >&2
     return 1
   fi
 }
@@ -207,10 +214,25 @@ file_age() {
 # Arguments: $1 = File path
 ################################################################################
 file_size() {
-  if [ -f "$1" ]; then
-    stat -c '%s' $1
+  local HUMAN FILE SIZE
+
+  until [ -z "$1" ]; do
+    case $1 in
+      -h|--human-readable)  HUMAN=1;;
+      *)                    FILE=$1;;
+    esac
+    shift
+  done
+
+  if [ -f "${FILE}" ]; then
+    SIZE=$(stat -c '%s' ${FILE})
+    if [ "${HUMAN}" = "1" ]; then
+      data_size_human "${SIZE}"
+    else
+      echo "${SIZE}"
+    fi
   else
-    error "File $1 does not exist"
+    error "File $FILE does not exist"
     return 1
   fi
 }

@@ -36,7 +36,7 @@ source ./bashlib
 msg "${CYAN}${BOLD}Demo${RESET}"
 horizontal_line
 
-SIZE_HUMAN=$(file_size ./bashlib | data_size_human)
+SIZE_HUMAN=$(file_size -h ./bashlib)
 AGE=$(file_age ./bashlib)
 msg "The bashlib is ${SIZE_HUMAN} and was created ${AGE} seconds ago"
 
