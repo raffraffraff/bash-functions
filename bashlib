@@ -102,7 +102,6 @@ data_size_human() {
 ################################################################################
 date_diff() {
   local DATE1 DATE2 EPOCH1 EPOCH2 ARGS
-  declare -a ARGS=()
 
   # Parse args
   until [ -z "$1" ]; do
@@ -111,21 +110,24 @@ date_diff() {
        -m|--minutes)  SEC=60;;
        -h|--hours)    SEC=3600;;
        -d|--days)     SEC=86400;;
-       *)             ARGS+=("$1");;
+       *)             if [ -z "${DATE1}" ]; then
+                        DATE1="$1"
+                      else
+                        DATE2="$1"
+                      fi
     esac
     shift
   done
 
   # Sanity check the input
-  if [ "${#ARGS[@]}" -eq 1 ]; then
-    DATE2="${ARGS[0]}"
-    DATE1="now"
-  elif [ "${#ARGS[@]}" -eq 2 ]; then
-    DATE2="${ARGS[1]}"
-    DATE1="${ARGS[0]}"
-  else
-    echo "Usage: date_diff [-s] [-m] [-h] [-d] <date1> [date2]" >&2
+  if [ -z "${DATE1}" ]; then
+    echo "Usage: date_diff [-s] [-m] [-h] [-d] <date1> [date2]" >&2             
     return 1
+  else
+    if [ -z "${DATE2}" ]; then
+      DATE2="${DATE1}"
+      DATE1="$(date +%F\ %H:%M:%S)"
+    fi
   fi
 
   # Handle epoch dates
@@ -202,7 +204,7 @@ file_age() {
 
   if [ -f "${FILE}" ]; then
     EPOCH=$(stat -c '%Y' "${FILE}")
-    date_diff ${ARG} "now" "${EPOCH}"
+    date_diff ${ARG} "$(date +%F\ %H:%M:%S)" "${EPOCH}"
   else
     echo "File $FILE does not exist" >&2
     return 1
@@ -301,7 +303,7 @@ log() {
 ################################################################################
 remove_special_chars() {
   if [ $# -gt 0 ]; then
-    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" <<<"${@}"
+    echo "${@}" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
   else
     sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
   fi
@@ -313,7 +315,7 @@ remove_special_chars() {
 ################################################################################
 to_lower() {
   if [ $# -gt 0 ]; then
-    tr '[A-Z]' '[a-z]' <<<"${@}"
+    echo "${@}" | tr '[A-Z]' '[a-z]'
   else
     tr '[A-Z]' '[a-z]'
   fi
@@ -325,7 +327,7 @@ to_lower() {
 ################################################################################
 to_upper() {
   if [ $# -gt 0 ]; then
-    tr '[a-z]' '[A-Z]' <<<"${@}"
+    echo "${@}" | tr '[a-z]' '[A-Z]'
   else
     tr '[a-z]' '[A-Z]'
   fi
