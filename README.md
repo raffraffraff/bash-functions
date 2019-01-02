@@ -1,5 +1,5 @@
 # Why BASH?
-TL;DR BASH is available on practically all Linux servers and tends to be in most docker containers (ignoring those that just contain a statically compiled Golang binary, or Alpine with its cut-down 'ash' shell). In fact, since the world went mad about containers, shell scripting has become arguably more important; if you want to keep your container tiny, you might want to avoid installing a 'proper' language like Python or Ruby to bootstrap your app, as they can add 30mb or more while bash (in Alpine Linux) only adds 13mb, and in fact most of your bash will run perfectly well in ash anyway.
+TL;DR BASH is available on practically all Linux servers and tends to be in most docker containers (ignoring those that just contain a statically compiled Golang binary, or Alpine with its cut-down 'ash' shell). In fact, since the world went mad about containers, shell scripting has become arguably more important; if you want to keep your container tiny, you might want to avoid installing a 'proper' language like Python or Ruby to bootstrap your app, as they can add more than 30mb, while bash (in Alpine Linux) is 13mb. In, your shell scripts will probably work fine in ash anyway.
 
 # When BASH?
 There's no right answer, but I think these situations are fine:
@@ -66,10 +66,10 @@ fi
 
 if is_num "${NUMBER}"; then
   if is_int "${NUMBER}"; then
-	  warn "${NUMBER} is a number, but is also an integer"
-	else
+    warn "${NUMBER} is a number, but is also an integer"
+  else
     msg "${NUMBER} is a number"
-	fi
+  fi
 else
   error "${NUMBER} is not a number"
 fi
